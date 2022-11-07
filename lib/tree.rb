@@ -10,7 +10,7 @@ class Tree
   end
 
   def build_tree(array)
-    return if array.empty?
+    return nil if array.empty?
 
     array = array.sort.uniq
     return Node.new(array[0]) if array.length <= 1
@@ -34,11 +34,28 @@ class Tree
   def delete(value)
   end
 
+  # def find(value, node = @root)
+  #   return 'Value not present' if node.nil?
+
+  #   return node if node.data == value
+
+  #   node.data > value ? find(value, node.left) : find(value, node.right)
+
+  # end
+
   def find(value)
+    node = @root
+
+    while node
+      return node if node.data == value
+
+      node = node.left if value < node.data
+      node = node.right if value > node.data
+    end
+    "value not present"
   end
 
-  def level_order(&block)
-    yield
+  def level_order
   end
 
   def inorder
@@ -55,7 +72,6 @@ class Tree
   end
 
   def depth(node)
-  
     return depth
   end
 
@@ -67,8 +83,12 @@ class Tree
 
 end
 
+# testing methods
+
 a = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]
 
 tree = Tree.new(a)
 
 tree.pretty_print
+
+puts tree.find(9)
