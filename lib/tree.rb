@@ -1,5 +1,3 @@
-#frozen_string_literal: True
-
 require_relative 'node.rb'
 # Create a Tree class that builds a tree from a sorted array
 
@@ -28,51 +26,97 @@ class Tree
     pretty_print(node.left, "#{prefix}#{is_left ? '    ' : '│   '}", true) if node.left
   end
 
-  def insert(value)
+  def insert(value, node = @root)
+    return Node.new(value) if node.nil?
+
+    node.data > value ? node.left = insert(value, node.left) : node.right = insert(value, node.right)
+    return node
   end
 
   def delete(value)
+    # TODO
   end
 
-  # def find(value, node = @root)
-  #   return 'Value not present' if node.nil?
+  def find(value, node = @root)
+    return nil if node.nil?
 
-  #   return node if node.data == value
+    return node if node.data == value
 
-  #   node.data > value ? find(value, node.left) : find(value, node.right)
+    node.data > value ? find(value, node.left) : find(value, node.right)
 
+  end
+
+  # # interative version of a find method
+  # def find(value)
+  #   node = @root
+
+  #   while node
+  #     return node if node.data == value
+
+  #     if value < node.data
+  #       node = node.left 
+  #     else
+  #       node = node.right 
+  #     end
+  #   end
+  #   "value not present"
   # end
 
-  def find(value)
-    node = @root
+  def level_order(root = @root)
+    return if root.nil?
+    queue = []
+    order = []
+    queue.push(root)
 
-    while node
-      return node if node.data == value
-
-      node = node.left if value < node.data
-      node = node.right if value > node.data
+    until queue.empty?
+      current_node = queue.shift
+      block_given? ? yield(current_node.data) : order << current_node.data
+      queue << current_node.left unless current_node.left.nil?
+      queue << current_node.right unless current_node.right.nil?
     end
-    "value not present"
+    order
   end
 
-  def level_order
+  def inorder(root = @root)
+    return if root.nil?
+
+    inorder(root.left)
+    puts "#{root.data} "
+    inorder(root.right)
+
   end
 
-  def inorder
+  def preorder(root = @root)
+    return if root.nil?
+
+    puts "#{root.data} "
+    preorder(root.left)
+    preorder(root.right)
   end
 
-  def preorder
+  def postorder(root = @root)
+    return if root.nil?
+
+    postorder(root.left)
+    postorder(root.right)
+    puts "#{root.data} "
   end
 
-  def postorder
+  def height(root = @root)
+    return -1 if root.nil? || node.nil?
+
+    left_height = height(root.left)
+    right_height = height(root.right)
+
+    return [left_height, right_height].max + 1
   end
 
-  def height(node)
-    return height
-  end
+  def depth(node, root = @root)
+    return -1 if root.nil? || node.nil?
 
-  def depth(node)
-    return depth
+    return 0 if node.data == root.data
+    return 1 + depth(node, root.left) if node.data < root.data
+    return 1 + depth(node, root.right) if node.data > root.data
   end
 
   def balanced?
@@ -92,3 +136,13 @@ tree = Tree.new(a)
 tree.pretty_print
 
 puts tree.find(9)
+
+tree.insert(6)
+tree.pretty_print
+
+p tree.level_order
+
+puts tree.height(tree.find(100))
+puts tree.depth(tree.find(100))
+
+
