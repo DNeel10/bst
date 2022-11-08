@@ -77,33 +77,35 @@ class Tree
     order
   end
 
-  def inorder(root = @root)
+  def inorder(root = @root, order = [])
     return if root.nil?
 
-    inorder(root.left)
-    puts "#{root.data} "
-    inorder(root.right)
-
+    inorder(root.left, order)
+    order << root.data
+    inorder(root.right, order)
+    order
   end
 
-  def preorder(root = @root)
+  def preorder(root = @root, order = [])
     return if root.nil?
 
-    puts "#{root.data} "
-    preorder(root.left)
-    preorder(root.right)
+    order << root.data
+    preorder(root.left, order)
+    preorder(root.right, order)
+    order
   end
 
-  def postorder(root = @root)
+  def postorder(root = @root, order = [])
     return if root.nil?
 
-    postorder(root.left)
-    postorder(root.right)
-    puts "#{root.data} "
+    postorder(root.left, order)
+    postorder(root.right, order)
+    order << root.data
+    order
   end
 
   def height(root = @root)
-    return -1 if root.nil? || node.nil?
+    return -1 if root.nil?
 
     left_height = height(root.left)
     right_height = height(root.right)
@@ -119,10 +121,17 @@ class Tree
     return 1 + depth(node, root.right) if node.data > root.data
   end
 
-  def balanced?
+  def balanced?(root = @root)
+    return nil if root.nil?
+
+    left_height = height(root.left)
+    right_height = height(root.right)
+
+    (left_height - right_height).abs <= 1
   end
 
   def rebalance
+    @root = build_tree(inorder())
   end
 
 end
@@ -137,12 +146,18 @@ tree.pretty_print
 
 puts tree.find(9)
 
-tree.insert(6)
+tree.insert(323)
+tree.insert(322)
+tree.insert(321)
+tree.insert(320)
 tree.pretty_print
 
-p tree.level_order
+p tree.inorder
 
-puts tree.height(tree.find(100))
-puts tree.depth(tree.find(100))
+puts tree.height(tree.find(9))
+puts tree.depth(tree.find(9))
+puts tree.balanced?
+tree.rebalance
 
+puts tree.balanced?
 
