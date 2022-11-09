@@ -33,8 +33,44 @@ class Tree
     return node
   end
 
-  def delete(value)
-    # TODO
+  def min_value_node(root = @root)
+    current_node = root
+
+    unless current_node.nil? && current_node.left.nil?
+      current_node = current_node.left
+    end
+    return current_node
+  end
+
+  def delete(value, root = @root)
+    # Base Case: root is nil
+    return nil if root.nil?
+
+    if value > root.data
+       root.right = delete(value, root.right)
+    elsif value < root.data
+      root.left = delete(value, root.left)
+    else # other option is that the value == root.data
+
+    # Case 1: Node to be deleted is the leaf node (no children)
+      if (root.left.nil? && root.right.nil?)
+        return nil 
+
+      # Case 2: Node to be deleted has only one child
+      elsif root.left.nil?
+        return root.right
+        
+      elsif root.right.nil?
+        return root.left
+      end
+      
+    # Case 3: Node to be deleted has two children
+      temp = min_value_node(root.right)
+
+      root.data = temp.data
+      root.right = delete(temp.data, root.right)
+    end
+    root
   end
 
   def find(value, node = @root)
@@ -131,7 +167,7 @@ class Tree
   end
 
   def rebalance
-    @root = build_tree(inorder())
+    @root = build_tree(inorder()) unless balanced?
   end
 
 end
@@ -147,9 +183,7 @@ tree.pretty_print
 puts tree.find(9)
 
 tree.insert(323)
-tree.insert(322)
-tree.insert(321)
-tree.insert(320)
+
 tree.pretty_print
 
 p tree.inorder
@@ -161,3 +195,5 @@ tree.rebalance
 
 puts tree.balanced?
 
+tree.delete(67)
+tree.pretty_print
